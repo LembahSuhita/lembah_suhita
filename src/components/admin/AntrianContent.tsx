@@ -133,6 +133,7 @@ const AntrianContent: React.FC = () => {
     }
   };
 
+  // Bagian Algoritma Greedy
   const autoAcceptReject = async () => {
     const sortedData = [...data].sort((a, b) => b.totalPemelian - a.totalPemelian);
     let acceptedCount = 0;
@@ -146,6 +147,7 @@ const AntrianContent: React.FC = () => {
       }
     }
   };
+  // --------------------- Sampai Sini -------------------------
 
   const filteredData = selectedSession
     ? data.filter(antrian => antrian.sesi === selectedSession && antrian.status === 'pending')
