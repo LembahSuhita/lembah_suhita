@@ -2,7 +2,7 @@
 
 Selamat datang di **Lembah Suhita**, tujuan Anda untuk pemesanan tiket wisata di Lembah Suhita.
 
-![Logo](public/img/logos/logo.png)
+![Logo](public/img/assets/icon.png)
 
 ## Daftar Isi
 
