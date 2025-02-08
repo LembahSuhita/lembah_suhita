@@ -26,6 +26,7 @@ const AntrianContent: React.FC = () => {
   const [selectedSession, setSelectedSession] = useState<string>('');
   const [sessionCapacity,] = useState<number>(10); // Example capacity
   const [buktiPembayaran, setBuktiPembayaran] = useState<fetchBuktiPembayaran[]>([]);
+  const [previewImage, setPreviewImage] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchSessions = async () => {
@@ -211,6 +212,11 @@ const AntrianContent: React.FC = () => {
                         alt={antrian.nama}
                         width={50}
                         height={50}
+                        className="cursor-pointer"
+                        onClick={() => {
+                          const url = buktiPembayaran.find(item => item.uniqueId === antrian.uniqueId)?.imageUrl;
+                          if (url) setPreviewImage(url);
+                        }}
                         />
                     </> : 'Belum Upload'}
                   </td>
@@ -234,6 +240,21 @@ const AntrianContent: React.FC = () => {
           </table>
         </div>
       </div>
+
+      {/* Full screen image preview overlay */}
+      {previewImage && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-90">
+          <div className="relative">
+            <img src={previewImage} alt="Preview" className="max-w-full max-h-screen" />
+            <button
+              onClick={() => setPreviewImage(null)}
+              className="absolute top-2 right-2 text-white bg-red-500 rounded px-2 py-1"
+            >
+              Tutup
+            </button>
+          </div>
+        </div>
+      )}
     </>
   );
 };
