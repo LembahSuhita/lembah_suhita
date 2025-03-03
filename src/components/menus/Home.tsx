@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useEffect } from 'react';
 import Image from 'next/image';
 import Cookie from 'js-cookie';
@@ -7,10 +8,34 @@ interface HomeProps {
   otherMenu: (data: string) => void;
 }
 
+interface Berita {
+  id: string;
+  title: string;
+  content: string;
+  imageUrl: string;
+}
+
+interface Fitur{
+  id: string;
+  title: string;
+  description: string;
+  imageUrl: string;
+}
+
+interface DashboardPaket {
+  id: string;
+  nama: string;
+  deskripsi: string;
+  harga: string;
+}
+
 const Home: React.FC<HomeProps> = ({ setActiveMenu, otherMenu }) => {
   const [showModal, setShowModal] = React.useState(false);
   // TODO: Replace with actual login check
   const [isLoggedIn, setIsLoggedIn] = React.useState(false);
+  const [berita, setBerita] = React.useState<Berita[]>([]);
+  const [fitur, setFitur] = React.useState<Fitur[]>([]);
+  const [dashboardPaket, setDashboardPaket] = React.useState<DashboardPaket[]>([]);
 
   const handleCekPesanan = (e: React.MouseEvent<HTMLAnchorElement>) => {
     e.preventDefault();
@@ -50,6 +75,69 @@ const Home: React.FC<HomeProps> = ({ setActiveMenu, otherMenu }) => {
     }
   }, [setActiveMenu]);
 
+  useEffect(() => {
+    const fetchFitur = async () => {
+      try {
+        const response = await fetch('/api/fitur/read_all');
+        const data = await response.json();
+        if (data.status) {
+          const fiturData: Fitur[] = data.data.map((item: any) => ({
+            id: String(item._id),
+            title: String(item.title),
+            description: String(item.description),
+            imageUrl: String(item.imageUrl)
+          }));
+          setFitur(fiturData);
+        }
+      } catch (error) {
+        console.error(error);
+      }
+    }
+    fetchFitur();
+  }, []);
+
+  useEffect(() => {
+    const fetchDashboardPaket = async () => {
+      try {
+        const response = await fetch('/api/dashboard_paket/read_all');
+        const data = await response.json();
+        if (data.status) {
+          const dashboardPaketData: DashboardPaket[] = data.data.map((item: any) => ({
+            id: String(item._id),
+            nama: String(item.nama),
+            deskripsi: String(item.deskripsi),
+            harga: String(item.harga)
+          }));
+          setDashboardPaket(dashboardPaketData);
+        }
+      } catch (error) {
+        console.error(error);
+      }
+    }
+    fetchDashboardPaket();
+  }, []);
+
+  useEffect(() => {
+    const fetchBerita = async () => {
+      try {
+        const response = await fetch('/api/berita/read_all');
+        const data = await response.json();
+        if (data.status) {
+          const beritaData: Berita[] = data.data.map((item: any) => ({
+            id: String(item._id),
+            title: String(item.title),
+            content: String(item.content),
+            imageUrl: String(item.imageUrl)
+          }));
+          setBerita(beritaData);
+        }
+      } catch (error) {
+        console.error(error);
+      }
+    };
+    fetchBerita();
+  }, []);
+
   return (
     <>
       <section className="relative bg-gray-100 min-h-screen flex items-center justify-center">
@@ -75,73 +163,55 @@ const Home: React.FC<HomeProps> = ({ setActiveMenu, otherMenu }) => {
           </div>
         </div>
         <div className="flex flex-col md:flex-row items-center justify-center space-y-4 md:space-y-0 md:space-x-4 mt-12">
-          <div className="p-4 bg-gray-100 rounded shadow-md flex flex-col items-center transform transition-transform duration-300 hover:scale-105 m-2 w-80 h-100">
-            <Image src="/img/assets/tentangkami/edukasi-lebah-madu.png" alt="Edukasi Lebah Madu" width={200} height={150} className="mb-2" />
-            <span className="text-[#794422] font-bold">Edukasi Lebah Madu</span>
-            <p className="text-gray-700 mt-2 text-center">Edukasi lebah madu merupakan kegiatan pembelajaran yang bertujuan untuk mengenalkan proses budidaya lebah madu, peran lebah dalam ekosistem, dan manfaat produk lebah seperti madu, propolis, dan royal jelly.</p>
-          </div>
-          <div className="p-4 bg-gray-100 rounded shadow-md flex flex-col items-center transform transition-transform duration-300 hover:scale-105 m-2 w-80 h-96">
-            <Image src="/img/assets/tentangkami/eco-print.png" alt="Eco Print" width={200} height={150} className="mb-2" />
-            <span className="text-[#794422] font-bold">Eco Print</span>
-            <p className="text-gray-700 mt-2 text-center">Edukasi ecoprint mengenalkan teknik pewarnaan alami pada kain menggunakan daun, bunga, dan bagian tumbuhan lainnya.</p>
-          </div>
-          <div className="p-4 bg-gray-100 rounded shadow-md flex flex-col items-center transform transition-transform duration-300 hover:scale-105 m-2 w-80 h-96">
-            <Image src="/img/assets/tentangkami/camping-ground.png" alt="Camping Ground" width={200} height={150} className="mb-2" />
-            <span className="text-[#794422] font-bold">Camping Ground</span>
-            <p className="text-gray-700 mt-2 text-center">Camping ground area yang disediakan untuk kegiatan berkemah di alam terbuka, menawarkan pengalaman dekat dengan alam yang cocok untuk rekreasi, edukasi, atau kegiatan kelompok.</p>
-          </div>
+          {fitur.length > 0 ? fitur.map((item) => (
+            <div key={item.id} className="p-4 bg-gray-100 rounded shadow-md flex flex-col items-center transform transition-transform duration-300 hover:scale-105 m-2 w-80 h-96">
+              <Image src={item.imageUrl} alt={item.title} width={200} height={150} className="mb-2" />
+              <span className="text-[#794422] font-bold">{item.title}</span>
+              <p className="text-gray-700 mt-2 text-center">{item.description}</p>
+            </div>
+          ))
+          : <p className="text-center w-full">Tidak ada fitur saat ini</p>}
         </div>
       </section>
 
       <section id='berita' className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <h2 className="text-3xl font-extrabold text-gray-900 text-center">Berita</h2>
         <div className="mt-8 flex overflow-x-scroll space-x-4">
-          {[1, 2, 3, 4, 5].map((id) => (
-            <div key={id} className="bg-white shadow-md rounded-lg p-4 min-w-[300px] flex flex-col items-center">
+          {berita.length > 0 ? berita.map((item) => (
+            <div key={item.id} className="bg-white shadow-md rounded-lg p-4 min-w-[300px] flex flex-col items-center">
               <div className="w-48 h-48 relative">
                 <Image
-                  src={`/img/berita/berita${id}.jpg`}
-                  alt={`Product ${id}`}
+                  src={item.imageUrl}
+                  alt={item.title}
                   layout="fill"
                   objectFit="cover"
                   className="rounded"
                 />
               </div>
+              <h3 className="mt-4 text-lg font-bold">{item.title}</h3>
+              <p className="text-sm text-gray-700 mt-2">{item.content.substring(0, 80)}...</p>
             </div>
-          ))}
+          ))
+          : <p className="text-center w-full">Tidak ada berita saat ini</p>}
         </div>
       </section>
 
       <section id='paketlembahsuhita' className="p-10 bg-white rounded shadow-md text-center">
         <h2 className="text-3xl font-extrabold text-gray-900 my-16">PAKET LEMBAH SUHITA</h2>
         <div className="flex flex-col md:flex-row items-center justify-center space-y-4 md:space-y-0 md:space-x-4 mt-12">
-          <div className="p-4 bg-gray-200 rounded shadow-md transform transition-transform duration-300 hover:scale-105 w-80 h-80 flex flex-col items-center">
-            <h3 className="text-xl font-bold mb-2 bg-[#794422] text-white py-2 px-10 rounded-full max-w-xs">Edu Lebah</h3>
-            <ul className="list-disc list-inside text-gray-700 text-left">
-              <li>Edukasi Lebah</li>
-              <li>Icip Madu Di Sarang</li>
-              <li>Free Honey Stick</li>
-            </ul>
-            <div className="flex-grow"></div>
-            <p className="mt-auto">Rp. 50.000 / Orang</p>
-          </div>
-          <div className="p-4 bg-gray-200 rounded shadow-md transform transition-transform duration-300 hover:scale-105 w-80 h-80 flex flex-col items-center">
-            <h3 className="text-xl font-bold mb-2 bg-[#794422] text-white py-2 px-10 rounded-full max-w-xs">Eco Print</h3>
-            <ul className="list-disc list-inside text-gray-700 text-left">
-              <li>Edukasi Ecoprint</li>
-              <li>Membuat Ecoprint</li>
-              <li>Totebag Ecoprint</li>
-            </ul>
-            <div className="flex-grow"></div>
-            <p className="mt-auto">Rp. 40.000 / Orang</p>
-          </div>
-          <div className="p-4 bg-gray-200 rounded shadow-md transform transition-transform duration-300 hover:scale-105 w-80 h-80 flex flex-col items-center">
-            <h3 className="text-xl font-bold mb-2 bg-[#794422] text-white py-2 px-10 rounded-full max-w-xs">Camping</h3>
-            <ul className="list-disc list-inside text-gray-700 text-left">
-              <li>Min 6 Orang <br /> <span className='font-bold'>Rp. 40.000 / Orang</span></li>
-              <li>Min 6 Orang + Tenda <br /> <span className='font-bold'>Rp. 80.000 / Orang</span></li>
-            </ul>
-          </div>
+          {dashboardPaket.length > 0 ? dashboardPaket.map((item) => (
+            <div key={item.id} className="p-4 bg-gray-200 rounded shadow-md transform transition-transform duration-300 hover:scale-105 w-80 h-80 flex flex-col items-center">
+              <h3 className="text-xl font-bold mb-2 bg-[#794422] text-white py-2 px-10 rounded-full max-w-xs">{item.nama}</h3>
+              <ul className="list-disc list-inside text-gray-700 text-left">
+                {item.deskripsi.split('\n').map((desc, index) => (
+                  <li key={index}>{desc}</li>
+                ))}
+              </ul>
+              <div className="flex-grow"></div>
+              <p className="mt-auto">Rp. {item.harga} / Orang</p>
+            </div>
+          ))
+          : <p className="text-center w-full">Tidak ada paket saat ini</p>}
         </div>
         <div className="my-10 p-4 bg-[#794422] rounded shadow-md transform transition-transform duration-300 hover:scale-105 w-full flex flex-col items-center">
           <h3 className="text-xl font-bold mb-2 bg-white text-[#794422] py-2 px-10 rounded-full">Promo</h3>

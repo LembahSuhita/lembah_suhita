@@ -21,7 +21,6 @@ const SessionContent = () => {
     terisi: 0
   });
 
-  // Fetch sessions from API
   useEffect(() => {
     fetchSessions();
   }, []);
@@ -44,10 +43,10 @@ const SessionContent = () => {
     try {
       const url = '/api/session/create';
       const method = "POST";
-      const constantJumlahPengunjung = 200; // Use constant 200
+      const constantJumlahPengunjung = 200;
 
       await fetch(url, {
-        method: method,
+        method,
         headers: {
           'Content-Type': 'application/json',
         },
@@ -68,7 +67,7 @@ const SessionContent = () => {
   };
 
   const handleDelete = async (id: string) => {
-    if (confirm('Apakah Kamu Ingin Menghapus Sesi Ini?')) {
+    if (confirm('Apakah Kamu Ingin Menghapus Jadwal Ini?')) {
       setIsLoading(true);
       try {
         const result = await fetch(`/api/session/delete`, {
@@ -147,8 +146,8 @@ const SessionContent = () => {
                   </td>
                   <td className="px-6 py-4 border-b">
                     <button
-                      onClick={() => handleDelete(session._id)}
                       className="text-red-500 hover:text-red-700"
+                      onClick={() => handleDelete(session._id)}
                     >
                       <FaTrash />
                     </button>
@@ -162,7 +161,9 @@ const SessionContent = () => {
         {showModal && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
             <div className="bg-white p-8 rounded-lg max-w-md w-full">
-              <h2 className="text-xl font-bold mb-4">Tambah Jadwal Baru</h2>
+              <h2 className="text-xl font-bold mb-4">
+                Tambah Jadwal Baru
+              </h2>
               <form onSubmit={handleSubmit}>
                 <div className="mb-4">
                   <label className="block mb-2">Jadwal</label>
